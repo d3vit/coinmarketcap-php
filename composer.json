@@ -1,5 +1,5 @@
 {
-    "name": "tregismoreira/coinmarketcap-php",
+    "name": "d3vit/coinmarketcap-php",
     "description": "PHP wrapper class for CoinMarketCap.",
     "type": "library",
     "require": {
