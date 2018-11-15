@@ -1,16 +1,15 @@
 # CoinMarketCap PHP Wrapper
 
-PHP wrapper class for CoinMarketCap, built on top of [Guzzle](https://github.com/guzzle/guzzle).
+PHP wrapper class for CoinMarketCap v2.
 
 ## Requirements
 
 * PHP 5.3+
 * [Composer](https://getcomposer.org/)
-* [Guzzle](https://github.com/guzzle/guzzle) (downloaded automatically by Composer)
 
 ## Installation
 
-`composer require tregismoreira/coinmarketcap-php`
+`composer require d3vit/coinmarketcap-php`
 
 ## Usage
 
