@@ -1,5 +1,5 @@
 {
-    "name": "d3vit/coinmarketcap-php",
+    "name": "tregismoreira/coinmarketcap-php",
     "description": "PHP wrapper class for CoinMarketCap.",
     "type": "library",
     "require": {
@@ -18,6 +18,15 @@
         "psr-4": {
             "CoinMarketCap\\" : "src/"
         }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/d3vit/coinmarketcap-php"
+        }
+    ],
+    "require": {
+        "d3vit/coinmarketcap-php": "master"
     }
 }
 
