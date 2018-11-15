@@ -1,20 +1,20 @@
 <?php
 /*
- * (c) Thiago Régis <tregismoreira@gmail.com>
+ * CoinMarketCap API implementation of https://coinmarketcap.com/api/.
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * Branched from https://github.com/tregismoreira/coinmarketcap-php
+ *
  */
+ 
 
 namespace CoinMarketCap;
-use GuzzleHttp\Client;
 
 class Base
 {
     /**
      * @var string
      */
-    const BASE_URL = 'https://api.coinmarketcap.com/v1/';
+    const BASE_URL = 'https://api.coinmarketcap.com/v2/';
 
     /**
      * @param array $params
@@ -22,9 +22,29 @@ class Base
      */
     public function getTicker($params = array())
     {
-        return $this->buildRequest('ticker', $params);
+        return $this->buildRequest('ticker/', $params);
     }
-
+	
+	/**
+     * @param $coinSlug
+     * @return INT
+     */
+    public function getTickerIdByCoinName( $coinSlug ) 
+    {
+        $tickers = $this->buildRequest('listings/', $params);
+		
+		//Loop through and find the ticker ID..ugh.
+		$id = 0;
+		foreach ($tickers['data'] as $ticker) {
+			if ( $ticker['website_slug'] == $coinSlug ) {
+				$id = $ticker['id'];
+				break;
+			}
+		}
+		
+		return $id;
+	}
+	
     /**
      * @param $coinId
      * @param array $params
@@ -32,7 +52,13 @@ class Base
      */
     public function getTickerByCoin($coinId, $params = array())
     {
-        return $this->buildRequest('ticker/' . $coinId, $params);
+		if ( !is_numeric($coinId) ) {
+			$coinId = self::getTickerIdByCoinName( $coinId );
+		}
+		
+		$ticker_data = $this->buildRequest('ticker/' . $coinId . "/", $params);
+		
+		return $ticker_data['data'];
     }
 
     /**
@@ -41,7 +67,7 @@ class Base
      */
     public function getGlobalData($params = array())
     {
-        return $this->buildRequest('global', $params);
+        return $this->buildRequest('global/', $params);
     }
 
     /**
@@ -51,11 +77,18 @@ class Base
      */
     private function buildRequest($endpoint, $params = array())
     {
-        $client = new Client();
-        $url = $this->buildUrl(self::BASE_URL . $endpoint, $params);
-        $request = $client->request('GET', $url);
-
-        return $this->jsonDecode($request->getBody()->getContents());
+		$ch = curl_init();
+		$url = $this->buildUrl(self::BASE_URL . $endpoint, $params);
+		
+		//Disable SSL verification
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		$result = curl_exec($ch);
+		
+		// Closing
+		curl_close($ch);
+        return json_decode($result, true);		
     }
 
     /**
@@ -70,17 +103,9 @@ class Base
         if ($params) {
           $output .= '?' . http_build_query($params);
         }
-
+		
         return $output;
     }
 
-    /**
-     * @param $string
-     * @return array
-     */
-    private function jsonDecode($string)
-    {
-        return json_decode($string);
-    }
-
+	
 }
